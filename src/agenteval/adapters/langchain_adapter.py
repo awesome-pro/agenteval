@@ -55,7 +55,7 @@ class AgentEvalCallbackHandler(BaseCallbackHandler):  # type: ignore[misc]
         if not _LANGCHAIN_AVAILABLE:
             raise ImportError(
                 "langchain-core is required for AgentEvalCallbackHandler. "
-                "Install it with: pip install agenteval[langchain]"
+                "Install it with: pip install agenteval-py[langchain]"
             )
         super().__init__()
         # Maps LangChain run_id → (start_time, tool_name, parsed_args)

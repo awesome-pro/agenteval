@@ -26,7 +26,11 @@ dependencies = [
 openai    = ["openai>=2.32.0"]
 anthropic = ["anthropic>=0.97.0"]
 langchain = ["langchain-core>=0.2.0"]
-all       = ["agenteval[openai,anthropic,langchain]"]
+all = [
+    "openai>=2.32.0",
+    "anthropic>=0.97.0",
+    "langchain-core>=0.2.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
