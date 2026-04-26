@@ -6,13 +6,7 @@
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 A lightweight, framework-agnostic toolkit for evaluating and observing LLM agents.
-
-<!-- SCREENSHOT PLACEHOLDER -->
-> **[IMAGE TO ADD]** Run `agenteval run tests/` against your demo agent and take a
-> screenshot of the terminal output showing the results table. Save it as
-> `assets/demo.png` and replace this block with:
-> `![agenteval terminal output](assets/demo.png)`
-
+![agenteval terminal output](assets/demo.png)
 ---
 
 ## The problem this solves
@@ -62,6 +56,10 @@ import agenteval
 ---
 
 ## Quick start
+
+![quick start](assets/live-openai-demo.gif)
+![failure-demo](assets/failure-demo.png)
+![examples](assets/examples.png)
 
 ```python
 import agenteval
@@ -119,11 +117,7 @@ for trace in result.failed_traces:
 
 ## How it works
 
-<!-- ARCHITECTURE DIAGRAM PLACEHOLDER -->
-> **[IMAGE TO ADD]** A simple box diagram showing the flow:
-> `Test Function → Tracer (wraps tools) → Runner (N concurrent runs) → Reporter`
-> Save it as `assets/architecture.png` and replace this block with:
-> `![Architecture](assets/architecture.png)`
+![Architecture](assets/architecture.png)
 
 There are four moving parts:
 
