@@ -10,7 +10,7 @@ from typing import Any, Callable, Optional
 import anyio
 
 from agenteval.models import AgentTrace, TestResult
-from agenteval.tracer import Tracer, _ACTIVE_TRACER
+from agenteval.tracer import _ACTIVE_TRACER, Tracer
 
 
 async def _run_single(

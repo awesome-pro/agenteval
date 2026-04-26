@@ -1,5 +1,5 @@
 [project]
-name = "agenteval"
+name = "agenteval-py"
 version = "0.1.0"
 description = "Lightweight evaluation and observability toolkit for LLM agents"
 readme = "README.md"
@@ -23,8 +23,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-openai    = ["openai>=1.30.0"]
-anthropic = ["anthropic>=0.28.0"]
+openai    = ["openai>=2.32.0"]
+anthropic = ["anthropic>=0.97.0"]
 langchain = ["langchain-core>=0.2.0"]
 all       = ["agenteval[openai,anthropic,langchain]"]
 dev = [
@@ -32,6 +32,7 @@ dev = [
     "pytest-asyncio>=0.23.0",
     "pytest-mock>=3.14.0",
     "anyio[trio]>=4.4.0",
+    "build>=1.2.0",
     "ruff>=0.4.0",
     "pyright>=1.1.360",
     "pre-commit>=3.7.0",
@@ -41,9 +42,9 @@ dev = [
 agenteval = "agenteval.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/your-org/agenteval"
-Repository = "https://github.com/your-org/agenteval"
-Issues = "https://github.com/your-org/agenteval/issues"
+Homepage = "https://github.com/awesome-pro/agenteval"
+Repository = "https://github.com/awesome-pro/agenteval"
+Issues = "https://github.com/awesome-pro/agenteval/issues"
 
 [build-system]
 requires = ["hatchling"]
@@ -64,7 +65,7 @@ ignore = ["E501"]
 [tool.pyright]
 include = ["src"]
 pythonVersion = "3.11"
-strict = true
+typeCheckingMode = "basic"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

@@ -27,5 +27,5 @@ Initial release.
 - **Anthropic adapter** — `wrap_tools()` and `extract_token_usage()` for Anthropic tool use (including cache token fields)
 - **LangChain adapter** — `AgentEvalCallbackHandler` that auto-connects to the active `Tracer` via `ContextVar`, enabling concurrent runs with full isolation
 - **Data models** — `AgentTrace`, `ToolCall`, `TestResult`, `SuiteResult` — all Pydantic v2, fully serializable to JSON
-- **Typed** — `py.typed` marker included; full strict Pyright compliance
+- **Typed** — `py.typed` marker included for downstream type checkers
 - **CI** — GitHub Actions workflow testing Python 3.11, 3.12, and 3.13

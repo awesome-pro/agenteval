@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import functools
 import inspect
 import time
@@ -10,7 +9,6 @@ import uuid
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, overload
 
-from agenteval.exceptions import TracerError
 from agenteval.models import AgentTrace, ToolCall
 
 if TYPE_CHECKING:

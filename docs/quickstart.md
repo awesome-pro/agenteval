@@ -7,16 +7,16 @@ This guide gets you from zero to a running eval test in about five minutes.
 ## Installation
 
 ```bash
-pip install agenteval
+pip install agenteval-py
 ```
 
 If you know which LLM framework you're using, grab the adapter too:
 
 ```bash
-pip install "agenteval[openai]"       # OpenAI function calling
-pip install "agenteval[anthropic]"    # Anthropic tool use
-pip install "agenteval[langchain]"    # LangChain callbacks
-pip install "agenteval[all]"          # all of the above
+pip install "agenteval-py[openai]"       # OpenAI function calling
+pip install "agenteval-py[anthropic]"    # Anthropic tool use
+pip install "agenteval-py[langchain]"    # LangChain callbacks
+pip install "agenteval-py[all]"          # all of the above
 ```
 
 ---

@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import asyncio
-import time
 
 import pytest
 
-from agenteval.tracer import Tracer, _ACTIVE_TRACER
+from agenteval.tracer import Tracer
 
 
 def make_sync_tool(name: str = "search") -> tuple[list[str], callable]:
@@ -120,7 +119,7 @@ class TestTracerToolDecorator:
 class TestRunContext:
     async def test_async_context_manager_sets_active_tracer(self) -> None:
         tracer = Tracer()
-        async with tracer.run(input="hello") as run:
+        async with tracer.run(input="hello"):
             assert Tracer.current() is tracer
         assert Tracer.current() is None
 
@@ -159,7 +158,7 @@ class TestRunContext:
     async def test_captures_agent_exception(self) -> None:
         tracer = Tracer()
         with pytest.raises(RuntimeError):
-            async with tracer.run(input="q") as run:
+            async with tracer.run(input="q"):
                 raise RuntimeError("agent crashed")
         assert tracer._run_error is not None
         assert "RuntimeError" in tracer._run_error

@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import json
 import pathlib
-import time
 
 import pytest
 from rich.console import Console
 
-from agenteval.models import AgentTrace, SuiteResult, TestResult, ToolCall
+from agenteval.models import AgentTrace, SuiteResult, TestResult
 from agenteval.reporter import RichReporter, _pass_rate_display
 
 

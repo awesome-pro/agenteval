@@ -146,7 +146,7 @@ This format is stable and designed to be easy to parse for dashboards, alerting,
 
 ```yaml
 - name: Install agenteval
-  run: pip install "agenteval[openai]"
+  run: pip install "agenteval-py[openai]"
 
 - name: Run agent evals
   run: agenteval run tests/ --n 5 --no-color --output eval-report.json

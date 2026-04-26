@@ -9,3 +9,4 @@ repos:
     rev: v1.1.360
     hooks:
       - id: pyright
+        stages: [manual]

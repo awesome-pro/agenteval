@@ -7,7 +7,7 @@ Adapters are optional integration layers for specific LLM frameworks. The core a
 ## OpenAI
 
 ```bash
-pip install "agenteval[openai]"
+pip install "agenteval-py[openai]"
 ```
 
 The OpenAI adapter provides two helpers:
@@ -66,7 +66,7 @@ async def test_openai_agent(tracer: Tracer) -> None:
 ## Anthropic
 
 ```bash
-pip install "agenteval[anthropic]"
+pip install "agenteval-py[anthropic]"
 ```
 
 Same interface as the OpenAI adapter:
@@ -123,7 +123,7 @@ async def test_anthropic_agent(tracer: Tracer) -> None:
 ## LangChain
 
 ```bash
-pip install "agenteval[langchain]"
+pip install "agenteval-py[langchain]"
 ```
 
 The LangChain integration works differently. Instead of wrapping tools manually, you pass a callback handler to LangChain's `invoke` or `ainvoke` call. The handler intercepts tool events and records them into the active tracer automatically.

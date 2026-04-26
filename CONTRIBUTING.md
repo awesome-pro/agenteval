@@ -9,7 +9,7 @@ Thanks for taking the time to contribute. This document covers everything you ne
 You'll need Python 3.11 or later. The project uses `pip` for dependency management and `hatchling` as the build backend.
 
 ```bash
-git clone https://github.com/your-username/agenteval
+git clone https://github.com/awesome-pro/agenteval
 cd agenteval
 
 # Install in editable mode with all dev dependencies
@@ -35,7 +35,7 @@ All tests pass without any API keys. The framework is tested against mock agents
 src/agenteval/       — library source code
 tests/               — test suite (mirrors src/agenteval/ structure)
 docs/                — topic-based documentation
-.github/workflows/   — CI configuration (lint + type check + tests on 3.11/3.12/3.13)
+.github/workflows/   — CI configuration (lint + tests + build on 3.11/3.12/3.13)
 ```
 
 The source lives under `src/` to keep it cleanly separated from tests and config. When you add a new module, mirror it in `tests/` with a `test_` prefix.
@@ -44,12 +44,14 @@ The source lives under `src/` to keep it cleanly separated from tests and config
 
 ## Code conventions
 
-**Type annotations** — the codebase uses strict Pyright typing. Every function should be fully annotated, including return types. Run `pyright src/` before pushing.
+**Type annotations** — the package ships with type information and uses Pyright
+for type checking. If you're working on typing-heavy changes, run `pyright src/`
+before pushing.
 
 **Formatting and linting** — Ruff handles both. The pre-commit hook runs it automatically on changed files. You can also run it manually:
 
 ```bash
-ruff check src/
+ruff check src/ tests/ --select F,I
 ruff format src/
 ```
 
@@ -94,8 +96,8 @@ pytest tests/adapters/ -v
 Before submitting, make sure:
 
 - [ ] `pytest tests/ -v` passes
-- [ ] `ruff check src/` passes with no errors
-- [ ] `pyright src/` passes with no errors
+- [ ] `ruff check src/ tests/ --select F,I` passes with no errors
+- [ ] `python -m build` completes successfully
 - [ ] New behavior has corresponding tests
 - [ ] If you added a public API, it's documented in `docs/` and/or the relevant docstring
 - [ ] Commit messages are descriptive (what changed and roughly why, not just "fix bug")

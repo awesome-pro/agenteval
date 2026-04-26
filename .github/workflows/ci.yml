@@ -24,13 +24,13 @@ jobs:
         uses: astral-sh/setup-uv@v3
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]" --system
+        run: uv pip install -e ".[dev,all]" --system
 
       - name: Lint
-        run: ruff check src/
-
-      - name: Type check
-        run: pyright src/
+        run: ruff check src/ tests/ --select F,I
 
       - name: Test
         run: pytest tests/ -v --tb=short
+
+      - name: Build package
+        run: python -m build

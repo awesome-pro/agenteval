@@ -1,6 +1,6 @@
 # agenteval
 
-[![CI](https://github.com/your-username/agenteval/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/agenteval/actions/workflows/ci.yml)
+[![CI](https://github.com/awesome-pro/agenteval/actions/workflows/ci.yml/badge.svg)](https://github.com/awesome-pro/agenteval/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -34,19 +34,30 @@ test_no_hallucination      15/20  ✅ 75%   avg 2.0s   3.5 steps
 ## Install
 
 ```bash
-pip install agenteval
+pip install agenteval-py
 ```
 
 If you're using a specific framework, grab the extras:
 
 ```bash
-pip install "agenteval[openai]"       # OpenAI function calling
-pip install "agenteval[anthropic]"    # Anthropic tool use
-pip install "agenteval[langchain]"    # LangChain callback integration
-pip install "agenteval[all]"          # everything
+pip install "agenteval-py[openai]"       # OpenAI function calling
+pip install "agenteval-py[anthropic]"    # Anthropic tool use
+pip install "agenteval-py[langchain]"    # LangChain callback integration
+pip install "agenteval-py[all]"          # everything
 ```
 
 Requires Python 3.11+.
+
+The PyPI package name is `agenteval-py`, but the Python import and CLI
+stay the same:
+
+```bash
+agenteval --help
+```
+
+```python
+import agenteval
+```
 
 ---
 
@@ -233,7 +244,7 @@ if not aset.passed:
 ### OpenAI
 
 ```bash
-pip install "agenteval[openai]"
+pip install "agenteval-py[openai]"
 ```
 
 ```python
@@ -277,7 +288,7 @@ async def test_openai_agent(tracer: Tracer) -> None:
 ### Anthropic
 
 ```bash
-pip install "agenteval[anthropic]"
+pip install "agenteval-py[anthropic]"
 ```
 
 ```python
@@ -321,7 +332,7 @@ async def test_anthropic_agent(tracer: Tracer) -> None:
 ### LangChain
 
 ```bash
-pip install "agenteval[langchain]"
+pip install "agenteval-py[langchain]"
 ```
 
 ```python
@@ -480,7 +491,7 @@ agenteval/
 ## Development setup
 
 ```bash
-git clone https://github.com/your-username/agenteval
+git clone https://github.com/awesome-pro/agenteval
 cd agenteval
 
 # Install in editable mode with all dev dependencies
@@ -489,9 +500,9 @@ pip install -e ".[dev]"
 # Run the full test suite (no API keys needed)
 pytest tests/ -v
 
-# Lint and type check
-ruff check src/
-pyright src/
+# Lint and test
+ruff check src/ tests/ --select F,I
+pytest tests/ -v
 ```
 
 The test suite runs completely offline — all agent runs inside the tests use mock functions. Three Python versions are tested in CI (3.11, 3.12, 3.13).
