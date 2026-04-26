@@ -17,6 +17,34 @@ if TYPE_CHECKING:
     from agenteval.reporter import Reporter
 
 
+DEFAULT_EXCLUDED_DIRS = {
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "env",
+    "node_modules",
+    "site-packages",
+    "venv",
+}
+
+
+def _is_excluded_path(path: pathlib.Path, base_path: pathlib.Path) -> bool:
+    try:
+        relative_parts = path.relative_to(base_path).parts
+    except ValueError:
+        relative_parts = path.parts
+    return any(part in DEFAULT_EXCLUDED_DIRS for part in relative_parts[:-1])
+
+
 def discover_test_files(
     paths: list[str | pathlib.Path],
     pattern: str = "test_*.py",
@@ -36,7 +64,11 @@ def discover_test_files(
         if base_path.is_file():
             found.append(base_path)
         elif base_path.is_dir():
-            found.extend(sorted(base_path.rglob(pattern)))
+            found.extend(
+                path
+                for path in sorted(base_path.rglob(pattern))
+                if not _is_excluded_path(path, base_path)
+            )
     return found
 
 

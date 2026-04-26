@@ -55,6 +55,17 @@ class TestDiscoverTestFiles:
         found = discover_test_files([tmp_path])
         assert found == []
 
+    def test_skips_virtualenv_directories(self, tmp_path: pathlib.Path) -> None:
+        (tmp_path / "test_project.py").write_text("# project test")
+        dependency_tests = tmp_path / ".venv" / "lib" / "python3.11" / "site-packages" / "pkg"
+        dependency_tests.mkdir(parents=True)
+        (dependency_tests / "test_dependency.py").write_text("# dependency test")
+
+        found = discover_test_files([tmp_path])
+        names = {f.name for f in found}
+        assert "test_project.py" in names
+        assert "test_dependency.py" not in names
+
 
 class TestImportTestFile:
     def test_registers_decorated_tests(self, tmp_path: pathlib.Path) -> None:
