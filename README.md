@@ -6,7 +6,7 @@
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 A lightweight, framework-agnostic toolkit for evaluating and observing LLM agents.
-![agenteval terminal output](assets/demo.png)
+![agenteval terminal output](https://raw.githubusercontent.com/awesome-pro/agenteval/v0.1.1/assets/demo.png)
 ---
 
 ## The problem this solves
@@ -57,9 +57,9 @@ import agenteval
 
 ## Quick start
 
-![quick start](assets/live-openai-demo.gif)
-![failure-demo](assets/failure-demo.png)
-![examples](assets/examples.png)
+![quick start](https://raw.githubusercontent.com/awesome-pro/agenteval/v0.1.1/assets/live-openai-demo.gif)
+![failure-demo](https://raw.githubusercontent.com/awesome-pro/agenteval/v0.1.1/assets/failure-demo.png)
+![examples](https://raw.githubusercontent.com/awesome-pro/agenteval/v0.1.1/assets/examples.png)
 
 ```python
 import agenteval
@@ -117,7 +117,7 @@ for trace in result.failed_traces:
 
 ## How it works
 
-![Architecture](assets/architecture.png)
+![Architecture](https://raw.githubusercontent.com/awesome-pro/agenteval/v0.1.1/assets/architecture.png)
 
 There are four moving parts:
 

@@ -10,6 +10,16 @@ Nothing yet.
 
 ---
 
+## [0.1.1] — 2026-06-07
+
+### Fixed
+
+- Updated the PyPI long description with the refreshed README media assets.
+- Switched README screenshots to stable raw GitHub URLs so they render on PyPI.
+- Refreshed package metadata for the `agenteval-py` patch release.
+
+---
+
 ## [0.1.0] — 2024-01-01
 
 Initial release.

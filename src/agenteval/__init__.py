@@ -30,7 +30,7 @@ from agenteval.runner import run
 from agenteval.suite import run_suite
 from agenteval.tracer import Tracer
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = [
     "AgentTrace",
     "AssertionSet",

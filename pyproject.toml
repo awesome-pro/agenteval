@@ -1,6 +1,6 @@
 [project]
 name = "agenteval-py"
-version = "0.1.0"
+version = "0.1.1"
 description = "Lightweight evaluation and observability toolkit for LLM agents"
 readme = "README.md"
 license = { text = "MIT" }
