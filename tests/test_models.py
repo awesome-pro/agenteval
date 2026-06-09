@@ -3,6 +3,7 @@
 import time
 
 import pytest
+from pydantic import ValidationError
 
 from agenteval.models import AgentTrace, SuiteResult, TestResult, ToolCall
 
@@ -33,7 +34,7 @@ def make_trace(passed: bool = True, duration: float = 1.0, steps: int | None = N
 class TestToolCall:
     def test_frozen(self) -> None:
         tc = make_tool_call()
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             tc.name = "other"  # type: ignore[misc]
 
     def test_error_defaults_none(self) -> None:
@@ -100,7 +101,7 @@ class TestTestResult:
         assert result.met_threshold is False
 
     def test_invalid_pass_rate_raises(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             TestResult(
                 test_name="t",
                 n_runs=10,

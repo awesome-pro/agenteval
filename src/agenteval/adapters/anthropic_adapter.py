@@ -34,7 +34,8 @@ Usage::
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from agenteval.tracer import Tracer
 
@@ -56,7 +57,7 @@ def wrap_tools(
     return {name: tracer.wrap(fn, name=name) for name, fn in tool_functions.items()}
 
 
-def extract_token_usage(response: Any) -> Optional[dict[str, int]]:
+def extract_token_usage(response: Any) -> dict[str, int] | None:
     """Extract token usage from an Anthropic Message response.
 
     Args:

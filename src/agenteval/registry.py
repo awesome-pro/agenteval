@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -21,13 +22,13 @@ class RegisteredTest:
 class TestRegistry:
     """Singleton registry that collects all @agenteval.test-decorated functions."""
 
-    _instance: Optional["TestRegistry"] = None
+    _instance: TestRegistry | None = None
 
     def __init__(self) -> None:
         self._tests: list[RegisteredTest] = []
 
     @classmethod
-    def global_registry(cls) -> "TestRegistry":
+    def global_registry(cls) -> TestRegistry:
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
@@ -43,7 +44,7 @@ class TestRegistry:
     def clear(self) -> None:
         self._tests.clear()
 
-    def get_all(self, tags: Optional[list[str]] = None) -> list[RegisteredTest]:
+    def get_all(self, tags: list[str] | None = None) -> list[RegisteredTest]:
         """Return all registered tests, optionally filtered by tags."""
         if not tags:
             return list(self._tests)
@@ -55,11 +56,11 @@ class TestRegistry:
 
 
 def test(
-    fn: Optional[Callable[..., Any]] = None,
+    fn: Callable[..., Any] | None = None,
     *,
     n: int = 20,
     threshold: float = 0.8,
-    tags: Optional[list[str]] = None,
+    tags: list[str] | None = None,
 ) -> Any:
     """Decorator that registers a test function with the global TestRegistry.
 

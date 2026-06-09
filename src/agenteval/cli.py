@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -26,15 +26,36 @@ def run_cmd(
         list[str],
         typer.Argument(help="Test files or directories to discover (default: current dir)"),
     ] = [".", ],  # noqa: B006
-    pattern: str = typer.Option("test_*.py", "--pattern", "-p", help="File glob pattern"),
-    tags: Optional[list[str]] = typer.Option(None, "--tag", "-t", help="Only run tests with this tag (repeatable)"),
-    n: Optional[int] = typer.Option(None, "--n", help="Override number of runs per test"),
-    threshold: Optional[float] = typer.Option(None, "--threshold", help="Override pass rate threshold (0.0–1.0)"),
-    concurrency: int = typer.Option(4, "--concurrency", "-c", help="Max concurrent runs"),
-    output: Optional[pathlib.Path] = typer.Option(None, "--output", "-o", help="Write JSON report to this file"),
-    no_color: bool = typer.Option(False, "--no-color", help="Disable color output"),
-    show_traces: bool = typer.Option(False, "--traces", help="Show per-trace details"),
-    show_failures: bool = typer.Option(True, "--failures/--no-failures", help="Show failure reasons"),
+    pattern: Annotated[
+        str, typer.Option("--pattern", "-p", help="File glob pattern")
+    ] = "test_*.py",
+    tags: Annotated[
+        list[str] | None,
+        typer.Option("--tag", "-t", help="Only run tests with this tag (repeatable)"),
+    ] = None,
+    n: Annotated[
+        int | None, typer.Option("--n", help="Override number of runs per test")
+    ] = None,
+    threshold: Annotated[
+        float | None,
+        typer.Option("--threshold", help="Override pass rate threshold (0.0–1.0)"),
+    ] = None,
+    concurrency: Annotated[
+        int, typer.Option("--concurrency", "-c", help="Max concurrent runs")
+    ] = 4,
+    output: Annotated[
+        pathlib.Path | None,
+        typer.Option("--output", "-o", help="Write JSON report to this file"),
+    ] = None,
+    no_color: Annotated[
+        bool, typer.Option("--no-color", help="Disable color output")
+    ] = False,
+    show_traces: Annotated[
+        bool, typer.Option("--traces", help="Show per-trace details")
+    ] = False,
+    show_failures: Annotated[
+        bool, typer.Option("--failures/--no-failures", help="Show failure reasons")
+    ] = True,
 ) -> None:
     """Discover and run agenteval tests."""
     console = Console(no_color=no_color)
@@ -66,8 +87,10 @@ def run_cmd(
 @app.command(name="report")
 def report_cmd(
     json_file: Annotated[pathlib.Path, typer.Argument(help="JSON report file from a previous run")],
-    show_traces: bool = typer.Option(False, "--traces", help="Show per-trace details"),
-    no_color: bool = typer.Option(False, "--no-color"),
+    show_traces: Annotated[
+        bool, typer.Option("--traces", help="Show per-trace details")
+    ] = False,
+    no_color: Annotated[bool, typer.Option("--no-color")] = False,
 ) -> None:
     """Pretty-print a saved JSON report."""
     import json as _json

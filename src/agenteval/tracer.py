@@ -6,8 +6,9 @@ import functools
 import inspect
 import time
 import uuid
-from contextvars import ContextVar
-from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, overload
+from collections.abc import Callable
+from contextvars import ContextVar, Token
+from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 from agenteval.models import AgentTrace, ToolCall
 
@@ -19,7 +20,7 @@ F = TypeVar("F", bound=Callable[..., Any])
 # The active Tracer for the current async task / thread context.
 # anyio.TaskGroup copies ContextVar state into each spawned task,
 # so concurrent test runs each get their own tracer automatically.
-_ACTIVE_TRACER: ContextVar[Optional["Tracer"]] = ContextVar("_ACTIVE_TRACER", default=None)
+_ACTIVE_TRACER: ContextVar[Tracer | None] = ContextVar("_ACTIVE_TRACER", default=None)
 
 
 class RunContext:
@@ -36,7 +37,7 @@ class RunContext:
             run.set_output(result)
     """
 
-    def __init__(self, tracer: "Tracer", input: Any) -> None:
+    def __init__(self, tracer: Tracer, input: Any) -> None:
         self._tracer = tracer
         self._input = input
 
@@ -56,7 +57,7 @@ class RunContext:
         """Attach arbitrary metadata to the trace."""
         self._tracer._metadata.update(kwargs)
 
-    def _enter(self) -> "RunContext":
+    def _enter(self) -> RunContext:
         self._tracer._run_input = self._input
         self._tracer._start_time = time.perf_counter()
         self._tracer._token = _ACTIVE_TRACER.set(self._tracer)
@@ -64,16 +65,20 @@ class RunContext:
 
     def _exit(self, exc_type: Any, exc_val: Any) -> None:
         self._tracer._end_time = time.perf_counter()
-        if exc_type is not None and exc_val is not None:
-            # Only capture non-AssertionError exceptions as agent errors.
-            # AssertionErrors from .check() are handled by the runner separately.
-            if not isinstance(exc_val, AssertionError):
-                self._tracer._run_error = f"{exc_type.__name__}: {exc_val}"
-        if hasattr(self._tracer, "_token"):
+        # Only capture non-AssertionError exceptions as agent errors.
+        # AssertionErrors from .check() are handled by the runner separately.
+        if (
+            exc_type is not None
+            and exc_val is not None
+            and not isinstance(exc_val, AssertionError)
+        ):
+            self._tracer._run_error = f"{exc_type.__name__}: {exc_val}"
+        if self._tracer._token is not None:
             _ACTIVE_TRACER.reset(self._tracer._token)
+            self._tracer._token = None
 
     # Async context manager
-    async def __aenter__(self) -> "RunContext":
+    async def __aenter__(self) -> RunContext:
         return self._enter()
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> bool:
@@ -81,7 +86,7 @@ class RunContext:
         return False  # do not suppress exceptions
 
     # Sync context manager
-    def __enter__(self) -> "RunContext":
+    def __enter__(self) -> RunContext:
         return self._enter()
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> bool:
@@ -108,14 +113,15 @@ class Tracer:
         self._tool_calls: list[ToolCall] = []
         self._run_input: Any = None
         self._run_output: Any = None
-        self._run_error: Optional[str] = None
-        self._token_usage: Optional[dict[str, int]] = None
-        self._total_steps: Optional[int] = None
+        self._run_error: str | None = None
+        self._token_usage: dict[str, int] | None = None
+        self._total_steps: int | None = None
         self._metadata: dict[str, Any] = {}
-        self._start_time: Optional[float] = None
-        self._end_time: Optional[float] = None
+        self._start_time: float | None = None
+        self._end_time: float | None = None
         self._assertion_errors: list[str] = []
         self._run_id: str = str(uuid.uuid4())
+        self._token: Token[Tracer | None] | None = None
 
     def run(self, input: Any, **metadata: Any) -> RunContext:
         """Context manager that marks the boundary of one agent invocation.
@@ -134,7 +140,7 @@ class Tracer:
     @overload
     def wrap(self, fn: F, *, name: str) -> F: ...
 
-    def wrap(self, fn: Callable[..., Any], *, name: Optional[str] = None) -> Callable[..., Any]:
+    def wrap(self, fn: Callable[..., Any], *, name: str | None = None) -> Callable[..., Any]:
         """Wrap a tool function to automatically record calls, timing, and errors.
 
         Preserves the sync/async nature of the original function.
@@ -150,7 +156,7 @@ class Tracer:
             async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
                 start = time.perf_counter()
                 ts = time.time()
-                error: Optional[str] = None
+                error: str | None = None
                 result: Any = None
                 try:
                     result = await fn(*args, **kwargs)
@@ -176,7 +182,7 @@ class Tracer:
             def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
                 start = time.perf_counter()
                 ts = time.time()
-                error: Optional[str] = None
+                error: str | None = None
                 result: Any = None
                 try:
                     result = fn(*args, **kwargs)
@@ -202,13 +208,13 @@ class Tracer:
     def tool(self, fn: F) -> F: ...
 
     @overload
-    def tool(self, fn: None = None, *, name: Optional[str] = None) -> Callable[[F], F]: ...
+    def tool(self, fn: None = None, *, name: str | None = None) -> Callable[[F], F]: ...
 
     def tool(
         self,
-        fn: Optional[Callable[..., Any]] = None,
+        fn: Callable[..., Any] | None = None,
         *,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> Any:
         """Decorator version of wrap(). Supports both @tracer.tool and @tracer.tool(name='x').
 
@@ -221,9 +227,13 @@ class Tracer:
             async def search(query: str) -> str: ...
         """
         if fn is not None:
+            if name is None:
+                return self.wrap(fn)
             return self.wrap(fn, name=name)
 
         def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
+            if name is None:
+                return self.wrap(f)
             return self.wrap(f, name=name)
 
         return decorator
@@ -235,7 +245,7 @@ class Tracer:
         result: Any,
         duration_seconds: float,
         timestamp: float,
-        error: Optional[str] = None,
+        error: str | None = None,
     ) -> None:
         """Manually record a tool call. Used by framework adapters (e.g. LangChain)."""
         self._tool_calls.append(
@@ -249,7 +259,7 @@ class Tracer:
             )
         )
 
-    def assert_that(self) -> "AssertionSet":
+    def assert_that(self) -> AssertionSet:
         """Return a fluent AssertionSet bound to the current trace snapshot."""
         from agenteval.assertions import AssertionSet
 
@@ -280,7 +290,7 @@ class Tracer:
         )
 
     @classmethod
-    def current(cls) -> Optional["Tracer"]:
+    def current(cls) -> Tracer | None:
         """Get the Tracer active in the current async context.
 
         Used by framework adapters (e.g. AgentEvalCallbackHandler) to record

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, computed_field, field_validator
 
@@ -17,7 +17,7 @@ class ToolCall(BaseModel):
     result: Any = None
     timestamp: float
     duration_seconds: float
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class AgentTrace(BaseModel):
@@ -27,10 +27,10 @@ class AgentTrace(BaseModel):
     input: Any
     output: Any = None
     tool_calls: list[ToolCall] = []
-    total_steps: Optional[int] = None
+    total_steps: int | None = None
     duration_seconds: float = 0.0
-    token_usage: Optional[dict[str, int]] = None
-    error: Optional[str] = None
+    token_usage: dict[str, int] | None = None
+    error: str | None = None
     assertion_errors: list[str] = []
     passed: bool = True
     metadata: dict[str, Any] = {}

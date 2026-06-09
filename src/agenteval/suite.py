@@ -7,7 +7,7 @@ import pathlib
 import sys
 import time
 import types
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from agenteval.models import SuiteResult, TestResult
 from agenteval.registry import TestRegistry
@@ -116,11 +116,11 @@ def run_suite(
     paths: str | list[str] = ".",
     *,
     pattern: str = "test_*.py",
-    tags: Optional[list[str]] = None,
-    fail_under: Optional[float] = None,
-    n_override: Optional[int] = None,
+    tags: list[str] | None = None,
+    fail_under: float | None = None,
+    n_override: int | None = None,
     concurrency: int = 4,
-    reporter: Optional["Reporter"] = None,
+    reporter: Reporter | None = None,
 ) -> SuiteResult:
     """Discover and run all @agenteval.test-decorated tests.
 

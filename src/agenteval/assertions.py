@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import json
 import math
-from typing import Any, Callable, Literal, Optional, Union
+from collections.abc import Callable
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -35,7 +36,7 @@ class AssertionSet:
     # Tool call assertions
     # ------------------------------------------------------------------ #
 
-    def called_tool(self, name: str) -> "AssertionSet":
+    def called_tool(self, name: str) -> AssertionSet:
         """Assert that the tool was called at least once."""
         calls = [tc for tc in self._trace.tool_calls if tc.name == name]
         if not calls:
@@ -46,7 +47,7 @@ class AssertionSet:
             )
         return self
 
-    def never_called_tool(self, name: str) -> "AssertionSet":
+    def never_called_tool(self, name: str) -> AssertionSet:
         """Assert that the tool was never called."""
         calls = [tc for tc in self._trace.tool_calls if tc.name == name]
         if calls:
@@ -61,7 +62,7 @@ class AssertionSet:
         *,
         min: int = 0,
         max: int = math.inf,  # type: ignore[assignment]
-    ) -> "AssertionSet":
+    ) -> AssertionSet:
         """Assert that the tool was called between min and max times (inclusive)."""
         count = sum(1 for tc in self._trace.tool_calls if tc.name == name)
         if not (min <= count <= max):
@@ -71,7 +72,7 @@ class AssertionSet:
             )
         return self
 
-    def tool_called_before(self, tool_a: str, tool_b: str) -> "AssertionSet":
+    def tool_called_before(self, tool_a: str, tool_b: str) -> AssertionSet:
         """Assert that tool_a was called before tool_b (at least one call each)."""
         calls = self._trace.tool_calls
         first_a = next((i for i, tc in enumerate(calls) if tc.name == tool_a), None)
@@ -98,7 +99,7 @@ class AssertionSet:
         args: dict[str, Any],
         *,
         match: Literal["subset", "exact"] = "subset",
-    ) -> "AssertionSet":
+    ) -> AssertionSet:
         """Assert that a tool was called with specific arguments.
 
         Args:
@@ -132,7 +133,7 @@ class AssertionSet:
     # Step / time assertions
     # ------------------------------------------------------------------ #
 
-    def completed_within_steps(self, n: int) -> "AssertionSet":
+    def completed_within_steps(self, n: int) -> AssertionSet:
         """Assert that the agent finished in n steps or fewer."""
         actual = self._trace.effective_steps
         if actual > n:
@@ -141,7 +142,7 @@ class AssertionSet:
             )
         return self
 
-    def completed_within_seconds(self, n: float) -> "AssertionSet":
+    def completed_within_seconds(self, n: float) -> AssertionSet:
         """Assert that the agent finished within n seconds."""
         actual = self._trace.duration_seconds
         if actual > n:
@@ -154,7 +155,7 @@ class AssertionSet:
     # Output assertions
     # ------------------------------------------------------------------ #
 
-    def response_contains(self, keyword: str, *, case_sensitive: bool = True) -> "AssertionSet":
+    def response_contains(self, keyword: str, *, case_sensitive: bool = True) -> AssertionSet:
         """Assert that the final response contains a keyword."""
         output = self._trace.output
         if output is None:
@@ -180,7 +181,7 @@ class AssertionSet:
         schema: type[BaseModel],
         *,
         parse_json: bool = True,
-    ) -> "AssertionSet":
+    ) -> AssertionSet:
         """Assert that the final response matches a Pydantic schema.
 
         If the output is a string and parse_json=True (default), it will be
@@ -219,7 +220,7 @@ class AssertionSet:
     # Error assertions
     # ------------------------------------------------------------------ #
 
-    def no_errors(self) -> "AssertionSet":
+    def no_errors(self) -> AssertionSet:
         """Assert that the agent completed without any exceptions."""
         if self._trace.error is not None:
             self._failures.append(
@@ -233,10 +234,10 @@ class AssertionSet:
 
     def custom(
         self,
-        fn: Callable[[AgentTrace], Union[bool, str]],
+        fn: Callable[[AgentTrace], bool | str],
         *,
-        message: Optional[str] = None,
-    ) -> "AssertionSet":
+        message: str | None = None,
+    ) -> AssertionSet:
         """Run a custom assertion function against the trace.
 
         Args:

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
+
 from agenteval.adapters.openai_adapter import extract_token_usage, wrap_tools
 from agenteval.tracer import Tracer
 
@@ -34,10 +36,8 @@ class TestWrapTools:
             raise ValueError("nope")
 
         wrapped = wrap_tools({"broken": broken}, tracer)
-        try:
+        with suppress(ValueError):
             wrapped["broken"](x=1)
-        except ValueError:
-            pass
 
         assert tracer._tool_calls[0].error is not None
 

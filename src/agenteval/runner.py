@@ -5,9 +5,11 @@ from __future__ import annotations
 import functools
 import inspect
 import time
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 import anyio
+from anyio.to_thread import run_sync as run_sync_in_worker_thread
 
 from agenteval.models import AgentTrace, TestResult
 from agenteval.tracer import _ACTIVE_TRACER, Tracer
@@ -66,9 +68,9 @@ def run(
     *,
     n: int = 20,
     concurrency: int = 4,
-    name: Optional[str] = None,
+    name: str | None = None,
     threshold: float = 0.8,
-    tags: Optional[list[str]] = None,
+    tags: list[str] | None = None,
 ) -> TestResult:
     """Run a test function N times and return aggregated results.
 
@@ -98,7 +100,7 @@ def run(
         original = test_fn
 
         async def async_wrapper(tracer: Tracer) -> None:
-            await anyio.to_thread.run_sync(functools.partial(original, tracer))
+            await run_sync_in_worker_thread(functools.partial(original, tracer))
 
         async_wrapper.__name__ = actual_name
         wrapped: Callable[[Tracer], Any] = async_wrapper
